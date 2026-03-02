@@ -19,6 +19,6 @@ setup(
         "matplotlib>=3.8.3",
         "seaborn>=0.13.2",
         "typing-extensions>=4.9.0",
-        "pydantic>=2.6.1",
+        "pydantic>=2.7.4",
     ],
 )
