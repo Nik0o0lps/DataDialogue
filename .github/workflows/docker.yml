@@ -18,8 +18,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
+      - name: Build and test Docker image
+        run: |
+          docker build -t datadialogue:test .
+          docker run --rm datadialogue:test python -c "import streamlit; import src.agents.sql_agent; import src.utils.database; print('Docker image OK')"
+      
       - name: Login to Docker Hub
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.repository == 'Nik0o0lps/DataDialogue'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -27,33 +32,20 @@ jobs:
         continue-on-error: true
       
       - name: Extract metadata
+        if: github.event_name != 'pull_request' && github.repository == 'Nik0o0lps/DataDialogue'
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/ai-data-assistant
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/datadialogue
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha
-      
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      
-      - name: Test Docker image
-        run: |
-          docker build -t test-image .
-          docker run --rm test-image python -c "import streamlit; print('Docker image OK')"
+        continue-on-error: true
       
       - name: Push to Docker Hub
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.meta.outcome == 'success'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -63,3 +55,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
         continue-on-error: true
+
