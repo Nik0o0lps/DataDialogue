@@ -30,41 +30,49 @@ Este sistema não apenas "segue um roteiro" - ele **navega por incertezas**, bus
 
 ### Fluxo de Agentes (LangGraph)
 
+```mermaid
+graph TB
+    User([👤 Usuário faz pergunta]) --> Agent
+    
+    subgraph Agent["🤖 AGENTE SQL - LangGraph"]
+        direction TB
+        A1[📊 1. Analisa Pergunta<br/>Obtém schema do banco]
+        A2[🧠 2. Gera SQL<br/>LLM cria query]
+        A3[⚙️ 3. Executa SQL<br/>Roda no banco]
+        A4{✅ Sucesso?}
+        A5[❌ 4. Corrige Erro<br/>Retry automático]
+        A6[📝 5. Formata Resposta<br/>Texto + insights]
+        
+        A1 --> A2
+        A2 --> A3
+        A3 --> A4
+        A4 -->|Sim| A6
+        A4 -->|Não| A5
+        A5 -->|Tentativa < 3| A2
+        A5 -->|Max retries| Error([⚠️ Erro final])
+    end
+    
+    A6 --> Result([✨ Resposta com<br/>dados e gráfico])
+    
+    style User fill:#e1f5e1
+    style Result fill:#e1f5e1
+    style Error fill:#ffe1e1
+    style A1 fill:#e3f2fd
+    style A2 fill:#fff3e0
+    style A3 fill:#f3e5f5
+    style A4 fill:#fff9c4
+    style A5 fill:#ffebee
+    style A6 fill:#e0f2f1
+    style Agent fill:#f5f5f5,stroke:#333,stroke-width:2px
 ```
 
-  Usuário faz    
-   pergunta      
-
-         
-         
-
-                    AGENTE SQL (LangGraph)                    
-                                                               
-            
-     Analisar      Gerar SQL   Executar SQL   
-     Pergunta                                         
-            
-                                                           
-                                                           
-                            
-                          Corrigir   Erro? Retry    
-                           Erro                         
-                            
-                                                            
-                                             Sucesso         
-                                                            
-                                                            
-    
-                Formatar Resposta Final                    
-    
-
-         
-         
-
-  Resposta com   
-  dados e gráfico
-
-```
+**Como funciona:**
+1. 📊 **Análise**: Entende a pergunta e carrega schema do banco
+2. 🧠 **Geração**: LLM cria query SQL apropriada
+3. ⚙️ **Execução**: Roda query no SQLite
+4. ✅ **Validação**: Verifica se query funcionou
+5. ❌ **Correção**: Se falhar, corrige automaticamente (até 3x)
+6. 📝 **Formatação**: Gera resposta em português com insights
 
 ### Componentes do Sistema
 
@@ -89,23 +97,60 @@ Este sistema não apenas "segue um roteiro" - ele **navega por incertezas**, bus
 
 ##  Estrutura do Banco de Dados
 
-O sistema trabalha com 5 tabelas principais:
+O sistema trabalha com 5 tabelas principais no banco SQLite `anexo_desafio_1.db`:
 
+```mermaid
+erDiagram
+    CLIENTES ||--o{ COMPRAS : realiza
+    CLIENTES ||--o{ CAMPANHAS_MARKETING : recebe
+    CLIENTES ||--o{ SUPORTE : contata
+    
+    CLIENTES {
+        int id PK
+        string nome
+        string email
+        real valor_total_gasto
+        date data_ultima_compra
+        int idade
+        string cidade
+        string estado
+        string profissao
+        string genero
+    }
+    
+    COMPRAS {
+        int id PK
+        int cliente_id FK
+        date data_compra
+        real valor
+        string categoria
+        string canal
+    }
+    
+    CAMPANHAS_MARKETING {
+        int id PK
+        int cliente_id FK
+        string nome_campanha
+        date data_envio
+        boolean interagiu
+        string canal
+    }
+    
+    SUPORTE {
+        int id PK
+        int cliente_id FK
+        date data_contato
+        string tipo_contato
+        boolean resolvido
+        string canal
+    }
 ```
- anexo_desafio_1.db
-  clientes (100 registros)
-    id, nome, email, valor_total_gasto, data_ultima_compra, 
-       idade, cidade, estado, profissao, genero
 
-  compras (946 registros)
-    id, cliente_id, data_compra, valor, categoria, canal
-
-  campanhas_marketing (248 registros)
-    id, cliente_id, nome_campanha, data_envio, interagiu, canal
-
-  suporte (273 registros)
-     id, cliente_id, data_contato, tipo_contato, resolvido, canal
-```
+**📊 Volume de Dados:**
+- 👥 **Clientes**: 100 registros
+- 🛒 **Compras**: 946 registros (2024-2025)
+- 📧 **Campanhas de Marketing**: 248 registros
+- 💬 **Suporte**: 273 registros
 
 ##  Instalação e Execução
 
