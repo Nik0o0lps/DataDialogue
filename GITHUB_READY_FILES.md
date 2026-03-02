@@ -1,4 +1,4 @@
-# 📦 Arquivos para Adicionar ao GitHub
+#  Arquivos para Adicionar ao GitHub
 
 ## 1. Dockerfile
 
@@ -592,7 +592,7 @@ clean:
 
 ---
 
-## 🎯 ORDEM DE IMPLEMENTAÇÃO SUGERIDA
+##  ORDEM DE IMPLEMENTAÇÃO SUGERIDA
 
 1. **Dockerfile** + **docker-compose.yml** (2h)
 2. **tests/conftest.py** + estrutura básica (1h)
