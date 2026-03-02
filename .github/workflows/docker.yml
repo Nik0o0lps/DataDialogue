@@ -20,7 +20,7 @@ jobs:
       
       - name: Build and test Docker image
         run: |
-          docker build -t datadialogue:test .
+          docker build --no-cache -t datadialogue:test .
           docker run --rm datadialogue:test python -c "import streamlit; import src.agents.sql_agent; import src.utils.database; print('Docker image OK')"
       
       - name: Login to Docker Hub
