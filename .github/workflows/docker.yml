@@ -1,5 +1,8 @@
 name: Docker Build and Push
 
+# Workflow to build and optionally push Docker images to Docker Hub
+# Build and test always runs; push only on successful build and when secrets are available
+
 on:
   push:
     branches: [ main ]
