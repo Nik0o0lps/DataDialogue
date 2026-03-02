@@ -18,6 +18,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
+      - name: Verify requirements.txt
+        run: |
+          echo "=== requirements.txt content ==="
+          cat requirements.txt | grep -E "(pydantic|typing-extensions)"
+          echo "================================"
+      
       - name: Build and test Docker image
         run: |
           docker build --no-cache -t datadialogue:test .
