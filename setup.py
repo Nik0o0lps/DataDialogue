@@ -18,7 +18,7 @@ setup(
         "plotly>=5.19.0",
         "matplotlib>=3.8.3",
         "seaborn>=0.13.2",
-        "typing-extensions>=4.9.0",
+        "typing-extensions>=4.12.2",
         "pydantic>=2.7.4",
     ],
 )

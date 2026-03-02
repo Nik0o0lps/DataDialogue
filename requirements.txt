@@ -17,7 +17,7 @@ seaborn==0.13.2
 # sqlite3 is built-in with Python, no need to install
 
 # Utilities
-typing-extensions==4.9.0
+typing-extensions>=4.12.2
 pydantic>=2.7.4
 
 # Testing (development)
