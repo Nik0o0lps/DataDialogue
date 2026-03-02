@@ -1,28 +1,28 @@
-# 🏗️ Arquitetura Detalhada do Sistema
+# Arquitetura Detalhada do Sistema
 
-## 📋 Visão Geral
+## Visão Geral
 
 O **DataDialogue** é construído com uma arquitetura modular baseada em agentes inteligentes usando **LangGraph**, uma biblioteca para orquestração de fluxos com LLMs. O sistema traduz perguntas em linguagem natural para queries SQL, executa-as e apresenta resultados com visualizações automáticas.
 
-## 🎯 Arquitetura de Alto Nível
+## Arquitetura de Alto Nível
 
 ```mermaid
 graph LR
-    subgraph "🖥️ Camada de Apresentação"
+    subgraph "Camada de Apresentação"
         UI[Streamlit UI]
     end
     
-    subgraph "🧠 Camada de Inteligência"
+    subgraph "Camada de Inteligência"
         AG[SQL Agent<br/>LangGraph]
         LLM[Groq LLM<br/>llama-3.3-70b]
     end
     
-    subgraph "💾 Camada de Dados"
+    subgraph "Camada de Dados"
         DB[(SQLite<br/>Database)]
         DM[Database<br/>Manager]
     end
     
-    subgraph "📊 Camada de Visualização"
+    subgraph "Camada de Visualização"
         VIZ[Data<br/>Visualizer]
     end
     
@@ -40,7 +40,7 @@ graph LR
     style VIZ fill:#fce4ec
 ```
 
-## 🔄 Componentes Principais
+## Componentes Principais
 
 ### 1. SQLAgent (Motor de IA)
 
@@ -67,15 +67,15 @@ class AgentState(TypedDict):
 
 ```mermaid
 graph TB
-    Start([🚀 Pergunta do Usuário]) --> A[📊 analyze_question]
-    A --> |Schema obtido| B[🤖 generate_sql]
-    B --> |Query gerada| C[⚙️ execute_sql]
-    C --> |Verifica resultado| D{✅ Query OK?}
-    D --> |Sim| E[📝 format_answer]
-    E --> End([✨ Resposta Final])
-    D --> |Não| F[❌ handle_error]
+    Start([Pergunta do Usuário]) --> A[analyze_question]
+    A --> |Schema obtido| B[generate_sql]
+    B --> |Query gerada| C[execute_sql]
+    C --> |Verifica resultado| D{Query OK?}
+    D --> |Sim| E[format_answer]
+    E --> End([Resposta Final])
+    D --> |Não| F[handle_error]
     F --> |Tentativa < 3| B
-    F --> |Max tentativas| G([⚠️ Erro Final])
+    F --> |Max tentativas| G([Erro Final])
     
     style Start fill:#e1f5e1
     style End fill:#e1f5e1
@@ -89,19 +89,19 @@ graph TB
 ```
 
 **Legenda:**
-- 🚀 **Entrada**: Pergunta em linguagem natural
-- 📊 **Análise**: Obtém schema e prepara contexto
-- 🤖 **Geração**: LLM cria query SQL
-- ⚙️ **Execução**: Roda query no banco
-- ✅ **Decisão**: Verifica sucesso/erro
-- 📝 **Formatação**: Resposta em português
-- ❌ **Tratamento**: Recuperação de erros (até 3 tentativas)
+- **Entrada**: Pergunta em linguagem natural
+- **Análise**: Obtém schema e prepara contexto
+- **Geração**: LLM cria query SQL
+- **Execução**: Roda query no banco
+- **Decisão**: Verifica sucesso/erro
+- **Formatação**: Resposta em português
+- **Tratamento**: Recuperação de erros (até 3 tentativas)
 
 #### Fluxo Detalhado de Cada Nó
 
 ```mermaid
 flowchart TD
-    subgraph "📊 analyze_question"
+    subgraph "analyze_question"
         A1[Recebe pergunta do usuário]
         A2[Obtém schema via DatabaseManager]
         A3[Prepara contexto para LLM]
@@ -109,7 +109,7 @@ flowchart TD
         A1 --> A2 --> A3 --> A4
     end
     
-    subgraph "🤖 generate_sql"
+    subgraph "generate_sql"
         B1[Monta prompt com schema + pergunta]
         B2{É retry?}
         B2 -->|Sim| B3[Adiciona erro anterior ao prompt]
@@ -120,7 +120,7 @@ flowchart TD
         B6 --> B7[Remove formatação markdown]
     end
     
-    subgraph "⚙️ execute_sql"
+    subgraph "execute_sql"
         C1[Recebe query SQL]
         C2[DatabaseManager.execute_query]
         C3{Sucesso?}
@@ -128,7 +128,7 @@ flowchart TD
         C3 -->|Não| C5[Retorna mensagem de erro]
     end
     
-    subgraph "❌ handle_error"
+    subgraph "handle_error"
         D1[Recebe erro SQL]
         D2[Incrementa contador de tentativas]
         D3{Tentativas < 3?}
@@ -136,7 +136,7 @@ flowchart TD
         D3 -->|Não| D5[Retorna erro final]
     end
     
-    subgraph "📝 format_answer"
+    subgraph "format_answer"
         E1[Recebe dados + query]
         E2[Invoca LLM para formatação]
         E3[Gera resposta em português]
@@ -199,13 +199,13 @@ flowchart TD
     A --> B{Quantidade de dados}
     B -->|> 100 linhas| NoViz[Apenas Tabela]
     B -->|<= 100 linhas| C{Tem coluna temporal?}
-    C -->|Sim| Line[📈 Gráfico de Linhas]
+    C -->|Sim| Line[Gráfico de Linhas]
     C -->|Não| D{Quantas colunas?}
     D -->|1 categórica + 1 numérica| E{Orientação apropriada?}
-    E -->|Labels longos| Horizontal[📊 Barras Horizontais]
-    E -->|Labels curtos| Vertical[📊 Barras Verticais]
-    D -->|<= 10 categorias| Pie[🥧 Gráfico de Pizza]
-    D -->|Outro padrão| Table[📋 Apenas Tabela]
+    E -->|Labels longos| Horizontal[Barras Horizontais]
+    E -->|Labels curtos| Vertical[Barras Verticais]
+    D -->|<= 10 categorias| Pie[Gráfico de Pizza]
+    D -->|Outro padrão| Table[Apenas Tabela]
     
     style Start fill:#e1f5e1
     style Line fill:#e3f2fd
@@ -233,21 +233,21 @@ flowchart TD
 
 ```mermaid
 graph LR
-    subgraph "🖥️ Interface Streamlit"
-        subgraph "📌 Sidebar"
-            S1[ℹ️ Informações]
-            S2[💡 Exemplos]
-            S3[🛠️ Tecnologias]
+    subgraph "Interface Streamlit"
+        subgraph "Sidebar"
+            S1[Informações]
+            S2[Exemplos]
+            S3[Tecnologias]
         end
         
-        subgraph "📱 Área Principal"
-            M1[📝 Input de Pergunta]
-            M2[🧠 Raciocínio Expandível]
-            M3[💻 Query SQL Gerada]
-            M4[💬 Resposta em Texto]
-            M5[📊 Visualização]
-            M6[📋 Tabela de Dados]
-            M7[⬇️ Download CSV]
+        subgraph "Área Principal"
+            M1[Input de Pergunta]
+            M2[Raciocínio Expandível]
+            M3[Query SQL Gerada]
+            M4[Resposta em Texto]
+            M5[Visualização]
+            M6[Tabela de Dados]
+            M7[Download CSV]
             
             M1 --> M2
             M2 --> M3
@@ -296,40 +296,40 @@ st.session_state.current_question   # Pergunta ativa
 st.session_state.agent_ready        # Status de inicialização
 ```
 
-## 🔀 Fluxo de Dados Completo
+## Fluxo de Dados Completo
 
 ```mermaid
 sequenceDiagram
-    participant U as 👤 Usuário
-    participant UI as 🖥️ Streamlit UI
-    participant SA as 🤖 SQLAgent
-    participant LLM as 🧠 Groq LLM
-    participant DB as 🗄️ DatabaseManager
-    participant VIZ as 📊 DataVisualizer
+    participant U as Usuário
+    participant UI as Streamlit UI
+    participant SA as SQLAgent
+    participant LLM as Groq LLM
+    participant DB as DatabaseManager
+    participant VIZ as DataVisualizer
     
     U->>UI: Digite pergunta
     UI->>SA: query(question)
     
     rect rgb(230, 242, 255)
-        Note over SA: 1️⃣ analyze_question
+        Note over SA: 1. analyze_question
         SA->>DB: get_schema()
         DB-->>SA: Schema completo
     end
     
     rect rgb(255, 243, 224)
-        Note over SA: 2️⃣ generate_sql
+        Note over SA: 2. generate_sql
         SA->>LLM: Gere SQL para: "{question}"
         LLM-->>SA: Query SQL
     end
     
     rect rgb(243, 229, 245)
-        Note over SA: 3️⃣ execute_sql
+        Note over SA: 3. execute_sql
         SA->>DB: execute_query(sql)
         alt Query OK
             DB-->>SA: DataFrame com dados
         else Query com erro
             DB-->>SA: Mensagem de erro
-            Note over SA: 4️⃣ handle_error
+            Note over SA: 4. handle_error
             SA->>LLM: Corrija SQL (retry)
             LLM-->>SA: Nova query
             SA->>DB: execute_query(nova_sql)
@@ -338,7 +338,7 @@ sequenceDiagram
     end
     
     rect rgb(224, 242, 241)
-        Note over SA: 5️⃣ format_answer
+        Note over SA: 5. format_answer
         SA->>LLM: Formate resposta em PT-BR
         LLM-->>SA: Resposta formatada
     end
@@ -353,10 +353,10 @@ sequenceDiagram
     VIZ->>VIZ: Detecta tipo de dado
     VIZ-->>UI: Plotly Figure
     
-    UI->>U: 📊 Mostra gráfico + tabela
+    UI->>U: Mostra gráfico + tabela
 ```
 
-## 🎨 Padrões de Design Utilizados
+## Padrões de Design Utilizados
 
 ```mermaid
 mindmap
@@ -399,7 +399,7 @@ mindmap
 - **Esconde detalhes**: Abstrai SQLite e pandas
 - **Tratamento centralizado**: Erros capturados e formatados
 
-## 🔧 Pontos de Extensão
+## Pontos de Extensão
 
 ### 1. Adicionar Novos Tipos de Visualização
 
@@ -491,11 +491,11 @@ class MultiAgentOrchestrator:
         return workflow.compile()
 ```
 
-## 🔒 Segurança e Boas Práticas
+## Segurança e Boas Práticas
 
 ```mermaid
 graph TD
-    subgraph "🛡️ Camadas de Segurança"
+    subgraph "Camadas de Segurança"
         A[Validação de Input]
         B[Sanitização de SQL]
         C[Gestão de API Keys]
@@ -516,31 +516,31 @@ graph TD
 ```
 
 ### 1. Validação de SQL
-- ✅ Apenas SELECT queries são executadas por padrão
-- ✅ Sem DELETE, DROP, UPDATE sem aprovação explícita
-- 📋 TODO: Timeout para queries longas (futuro)
+- Apenas SELECT queries são executadas por padrão
+- Sem DELETE, DROP, UPDATE sem aprovação explícita
+- TODO: Timeout para queries longas (futuro)
 
 ### 2. Gestão de API Keys
-- ✅ Nunca commitar `.env` (incluído em `.gitignore`)
-- ✅ Usar variáveis de ambiente (`GROQ_API_KEY`)
-- ✅ Validação antes de uso (`check_setup.py`)
+- Nunca commitar `.env` (incluído em `.gitignore`)
+- Usar variáveis de ambiente (`GROQ_API_KEY`)
+- Validação antes de uso (`check_setup.py`)
 
 ### 3. Tratamento de Erros
-- ✅ Try-catch em todos os pontos críticos
-- ✅ Mensagens claras para usuário final
-- ✅ Logging estruturado (via `reasoning_steps`)
+- Try-catch em todos os pontos críticos
+- Mensagens claras para usuário final
+- Logging estruturado (via `reasoning_steps`)
 
 ### 4. Performance
-- ✅ Cache do schema (não muda frequentemente)
-- ✅ Limite de tentativas (max 3 retries)
-- ✅ Reuso da conexão LLM (singleton)
-- 📋 TODO: Conexão pool para múltiplos usuários
+- Cache do schema (não muda frequentemente)
+- Limite de tentativas (max 3 retries)
+- Reuso da conexão LLM (singleton)
+- TODO: Conexão pool para múltiplos usuários
 
-## 📊 Métricas e Observabilidade (Roadmap)
+## Métricas e Observabilidade (Roadmap)
 
 ```mermaid
 graph LR
-    subgraph "📈 Métricas Futuras"
+    subgraph "Métricas Futuras"
         M1[Total de Queries]
         M2[Taxa de Sucesso]
         M3[Tempo Médio]
@@ -556,7 +556,7 @@ graph LR
     M5 --> Dashboard
     M6 --> Dashboard
     
-    Dashboard[📊 Dashboard Analytics]
+    Dashboard[Dashboard Analytics]
     
     style M1 fill:#e3f2fd
     style M2 fill:#e8f5e9
@@ -581,7 +581,7 @@ metrics = {
 }
 ```
 
-## 🎯 Conclusão
+## Conclusão
 
 ```mermaid
 mindmap
@@ -610,19 +610,19 @@ mindmap
 
 A arquitetura foi projetada para ser:
 
-- ✅ **Modular**: Componentes independentes com responsabilidades claras
-- ✅ **Extensível**: Fácil adicionar funcionalidades sem quebrar código existente
-- ✅ **Robusta**: Tratamento de erros e mecanismo de retry automático
-- ✅ **Transparente**: Mostra todo o raciocínio e passos de execução
-- ✅ **Inteligente**: Usa LLM para decisões complexas e auto-correção
+- **Modular**: Componentes independentes com responsabilidades claras
+- **Extensível**: Fácil adicionar funcionalidades sem quebrar código existente
+- **Robusta**: Tratamento de erros e mecanismo de retry automático
+- **Transparente**: Mostra todo o raciocínio e passos de execução
+- **Inteligente**: Usa LLM para decisões complexas e auto-correção
 
 O uso de **LangGraph** permite criar fluxos sofisticados de agentes mantendo o código limpo, testável e fácil de entender. A combinação com **Groq** (modelo llama-3.3-70b-versatile) garante respostas rápidas e precisas.
 
 ---
 
 **Para mais detalhes técnicos:**
-- 📖 [README.md](README.md) - Visão geral e quick start
-- 🧪 [Código-fonte](src/) - Implementação completa
-- 📊 [Exemplos](EXAMPLES.md) - Casos de uso reais
-- 🤝 [Contribuindo](CONTRIBUTING.md) - Como colaborar
+- [README.md](README.md) - Visão geral e quick start
+- [Código-fonte](src/) - Implementação completa
+- [Exemplos](EXAMPLES.md) - Casos de uso reais
+- [Contribuindo](CONTRIBUTING.md) - Como colaborar
 

@@ -32,16 +32,16 @@ Este sistema não apenas "segue um roteiro" - ele **navega por incertezas**, bus
 
 ```mermaid
 graph TB
-    User([👤 Usuário faz pergunta]) --> Agent
+    User([Usuário faz pergunta]) --> Agent
     
-    subgraph Agent["🤖 AGENTE SQL - LangGraph"]
+    subgraph Agent["AGENTE SQL - LangGraph"]
         direction TB
-        A1[📊 1. Analisa Pergunta<br/>Obtém schema do banco]
-        A2[🧠 2. Gera SQL<br/>LLM cria query]
-        A3[⚙️ 3. Executa SQL<br/>Roda no banco]
-        A4{✅ Sucesso?}
-        A5[❌ 4. Corrige Erro<br/>Retry automático]
-        A6[📝 5. Formata Resposta<br/>Texto + insights]
+        A1[1. Analisa Pergunta<br/>Obtém schema do banco]
+        A2[2. Gera SQL<br/>LLM cria query]
+        A3[3. Executa SQL<br/>Roda no banco]
+        A4{Sucesso?}
+        A5[4. Corrige Erro<br/>Retry automático]
+        A6[5. Formata Resposta<br/>Texto + insights]
         
         A1 --> A2
         A2 --> A3
@@ -49,10 +49,10 @@ graph TB
         A4 -->|Sim| A6
         A4 -->|Não| A5
         A5 -->|Tentativa < 3| A2
-        A5 -->|Max retries| Error([⚠️ Erro final])
+        A5 -->|Max retries| Error([Erro final])
     end
     
-    A6 --> Result([✨ Resposta com<br/>dados e gráfico])
+    A6 --> Result([Resposta com<br/>dados e gráfico])
     
     style User fill:#e1f5e1
     style Result fill:#e1f5e1
@@ -67,12 +67,12 @@ graph TB
 ```
 
 **Como funciona:**
-1. 📊 **Análise**: Entende a pergunta e carrega schema do banco
-2. 🧠 **Geração**: LLM cria query SQL apropriada
-3. ⚙️ **Execução**: Roda query no SQLite
-4. ✅ **Validação**: Verifica se query funcionou
-5. ❌ **Correção**: Se falhar, corrige automaticamente (até 3x)
-6. 📝 **Formatação**: Gera resposta em português com insights
+1. **Análise**: Entende a pergunta e carrega schema do banco
+2. **Geração**: LLM cria query SQL apropriada
+3. **Execução**: Roda query no SQLite
+4. **Validação**: Verifica se query funcionou
+5. **Correção**: Se falhar, corrige automaticamente (até 3x)
+6. **Formatação**: Gera resposta em português com insights
 
 ### Componentes do Sistema
 
@@ -146,11 +146,11 @@ erDiagram
     }
 ```
 
-**📊 Volume de Dados:**
-- 👥 **Clientes**: 100 registros
-- 🛒 **Compras**: 946 registros (2024-2025)
-- 📧 **Campanhas de Marketing**: 248 registros
-- 💬 **Suporte**: 273 registros
+**Volume de Dados:**
+- **Clientes**: 100 registros
+- **Compras**: 946 registros (2024-2025)
+- **Campanhas de Marketing**: 248 registros
+- **Suporte**: 273 registros
 
 ##  Instalação e Execução
 
